@@ -574,7 +574,7 @@ Loading in a locally held Service Document:
             #headers['Content-Length'] = str(len(payload_data))    # must be str, not int type
             payload_data = [
                 ('atom', ('', str(metadata_entry), 'application/atom+xml; charset="utf-8"')),
-                ('payload', (filename, open(payload, 'rb'), mimetype, my_headers)),
+                ('payload', (filename, payload, mimetype, my_headers)),
             ]
             #resp, content = self.h.request(target_iri, method, headers=headers, payload=payload_data)
             resp = requests.request(method, target_iri, headers=headers, files=payload_data)
@@ -606,7 +606,7 @@ Loading in a locally held Service Document:
                 headers['Packaging'] = str(packaging)
             
             #resp, content = self.h.request(target_iri, method, headers=headers, payload=payload)
-            resp = requests.request(method, target_iri, headers=headers, data=open(payload, 'rb'))
+            resp = requests.request(method, target_iri, headers=headers, data=payload)
             _, took_time = self._t.time_since_start(request_type)
             if self.history:
                 self.history.log(request_type + ": simple resource request",

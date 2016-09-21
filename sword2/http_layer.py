@@ -69,7 +69,7 @@ class HttpLib2Layer(HttpLayer):
             # Need to work out why a 401 challenge will stop httplib2 from sending the file...
             # likely need to make it re-seek to 0...
             # FIXME: In the meantime, read the file into memory... *sigh*
-            payload = payload.read()
+            #payload = payload.read()
         resp, content = self.h.request(uri, method, headers=headers, body=payload)
         return (HttpLib2Response(resp), content)
 
