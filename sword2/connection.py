@@ -512,7 +512,7 @@ Loading in a locally held Service Document:
             # NULL body with explicit zero length.
             #headers['Content-Length'] = "0"
             #resp, content = self.h.request(target_iri, method, headers=headers)
-            resp = requests.request(method, target_iri, headers=headers)
+            resp = requests.request(method, target_iri, headers=headers, auth=(self.h.username, self.h.password))
             _, took_time = self._t.time_since_start(request_type)
             if self.history:
                 self.history.log(request_type + ": Empty request", 
@@ -524,7 +524,7 @@ Loading in a locally held Service Document:
                                  process_duration = took_time)  
         elif method == "DELETE":
             #resp, content = self.h.request(target_iri, method, headers=headers)
-            resp = requests.request(method, target_iri, headers=headers)
+            resp = requests.request(method, target_iri, headers=headers, auth=(self.h.username, self.h.password))
             _, took_time = self._t.time_since_start(request_type)
             if self.history:
                 self.history.log(request_type + ": DELETE request", 
@@ -542,7 +542,7 @@ Loading in a locally held Service Document:
             #headers['Content-Length'] = str(len(data))
             
             #resp, content = self.h.request(target_iri, method, headers=headers, payload=data)
-            resp = requests.request(method, target_iri, headers=headers, data=data)
+            resp = requests.request(method, target_iri, headers=headers, data=data, auth=(self.h.username, self.h.password))
             _, took_time = self._t.time_since_start(request_type)
             if self.history:
                 self.history.log(request_type + ": Metadata-only resource request", 
@@ -577,7 +577,7 @@ Loading in a locally held Service Document:
                 ('payload', (filename, payload, mimetype, my_headers)),
             ]
             #resp, content = self.h.request(target_iri, method, headers=headers, payload=payload_data)
-            resp = requests.request(method, target_iri, headers=headers, files=payload_data)
+            resp = requests.request(method, target_iri, headers=headers, files=payload_data, auth=(self.h.username, self.h.password))
             _, took_time = self._t.time_since_start(request_type)
             if self.history:
                 self.history.log(request_type + ": Multipart resource request",
@@ -606,7 +606,7 @@ Loading in a locally held Service Document:
                 headers['Packaging'] = str(packaging)
             
             #resp, content = self.h.request(target_iri, method, headers=headers, payload=payload)
-            resp = requests.request(method, target_iri, headers=headers, data=payload)
+            resp = requests.request(method, target_iri, headers=headers, data=payload, auth=(self.h.username, self.h.password))
             _, took_time = self._t.time_since_start(request_type)
             if self.history:
                 self.history.log(request_type + ": simple resource request",
@@ -620,7 +620,8 @@ Loading in a locally held Service Document:
             conn_l.error("Parameters were not complete: requires a metadata_entry, or a payload/filename/packaging or both")
             raise Exception("Parameters were not complete: requires a metadata_entry, or a payload/filename/packaging or both")
         
-        if resp['status'] == 201:
+        import pdb; pdb.set_trace()
+        if resp.status_code == 201:
             #   Deposit receipt in content
             conn_l.info("Received a Resource Created (201) response.")
             # Check response headers for updated Location IRI
@@ -643,13 +644,13 @@ Loading in a locally held Service Document:
                 d.code = 201
                 d.location = location
                 return d
-        elif resp['status'] == 204:
+        elif resp.status_code == 204:
             #   Deposit receipt in content
             conn_l.info("Received a valid 'No Content' (204) response.")
             location = resp.get('location', None)
             # Check response headers for updated Locatio
             return Deposit_Receipt(response_headers = dict(resp), location=location, code=204)
-        elif resp['status'] == 200:
+        elif resp.status_code == 200:
             #   Deposit receipt in content
             conn_l.info("Received a valid (200) OK response.")
             content_type = resp.get('content-type')
